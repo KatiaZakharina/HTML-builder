@@ -14,9 +14,9 @@ try {
             return;
           }
           console.log(
-            `${path.basename(filepath, path.extname(filepath))}\t-\t${path
+            `${path.basename(filepath, path.extname(filepath))} - ${path
               .extname(filepath)
-              .slice(1)}\t-\t${(stats.size / 1024).toFixed(3)}kb`,
+              .slice(1)} - ${(stats.size / 1024).toFixed(3)}kb`,
           );
         }
       });
