@@ -14,17 +14,23 @@ rm(path.join(__dirname, 'project-dist'), { recursive: true, force: true }, err =
     if (err) throw err;
   });
 
-  readdir(path.join(__dirname, 'assets')).then(dirs => {
-    for (const dir of dirs) {
-      mkdir(path.join(__dirname, 'project-dist', 'assets', dir), { recursive: true }, err => {
-        if (err) throw err;
-      });
-      copyDir(
-        path.join(__dirname, 'assets', dir),
-        path.join(__dirname, 'project-dist', 'assets', dir),
-      );
-    }
-  });
+  // readdir(path.join(__dirname, 'assets')).then(dirs => {
+  //   for (const dir of dirs) {
+  //     mkdir(path.join(__dirname, 'project-dist', 'assets', dir), { recursive: true }, err => {
+  //       if (err) throw err;
+  //     });
+  //     copyDir(
+  //       path.join(__dirname, 'assets', dir),
+  //       path.join(__dirname, 'project-dist', 'assets', dir),
+  //     );
+  //   }
+  // });
+
+  copyDir(
+    path.join(__dirname, 'assets'),
+    path.join(__dirname, 'project-dist', 'assets'),
+  );
+
   mergeStyles(path.join(__dirname, 'styles'), path.join(__dirname, 'project-dist', 'style.css'));
   
   
