@@ -29,4 +29,3 @@ function copyDir(origin, destination){
   });
 }
 copyDir(path.join(__dirname,'files') ,path.join(__dirname,'files-copy'));
-module.exports=copyDir;

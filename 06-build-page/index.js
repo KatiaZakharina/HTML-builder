@@ -1,11 +1,67 @@
-/**
- * @prettier
- */
 const fs = require('fs');
 const path = require('path');
-const copyDir = require('../04-copy-directory/index');
-const mergeStyles = require('../05-merge-styles/index');
-const { readdir, mkdir, rm, readFile } = require('fs/promises');
+const { readdir, mkdir, rm, readFile, copyFile } = require('fs/promises');
+
+
+function mergeStyles(entry, output){
+  rm(output, { recursive: true, force: true }, err => {
+    if (err) throw err;
+  }).then(() => {
+    readdir(entry).then(files => {
+      let steamsArr = [];
+  
+      for (const file of files) {
+        if (path.extname(file) == '.css') {
+          const stream = new fs.ReadStream(path.join(entry, file));
+  
+          steamsArr.push(
+            new Promise(resolve => {
+              stream.on('readable', function () {
+                let data = stream.read().toString();
+                stream.close();
+                resolve(data);
+              });
+            }),
+          );
+        }
+      }
+      Promise.all(steamsArr).then(styleArr => {
+        styleArr.forEach(style => {
+          fs.appendFile(output, style, err => {
+            if (err) console.error(err);
+          });
+        });
+      });
+    });
+  });
+}
+
+function copyDir(origin, destination){
+  rm(destination,{ recursive: true, force: true },(err) => {
+    if (err) throw err;
+  }).then((err)=>{
+    if(err) throw err;
+
+    mkdir(destination, { recursive: true }, (err) => {
+      if (err) throw err;
+    });
+    readdir(origin).then(files => {
+      for (const file of files) {
+        try {
+          fs.stat(path.join(origin, file), (err, stats) => {
+            if (stats.isDirectory()) {
+              copyDir(path.join(origin, file), path.join(destination, file));
+            } else{
+              copyFile(path.join(origin, file), path.join(destination, file));
+            }
+          });
+        } catch {
+          console.log('The file could not be copied');
+        }
+      }
+    });
+  });
+}
 
 rm(path.join(__dirname, 'project-dist'), { recursive: true, force: true }, err => {
   if (err) throw err;
@@ -13,18 +69,6 @@ rm(path.join(__dirname, 'project-dist'), { recursive: true, force: true }, err =
   mkdir(path.join(__dirname, 'project-dist'), { recursive: true }, err => {
     if (err) throw err;
   });
-
-  // readdir(path.join(__dirname, 'assets')).then(dirs => {
-  //   for (const dir of dirs) {
-  //     mkdir(path.join(__dirname, 'project-dist', 'assets', dir), { recursive: true }, err => {
-  //       if (err) throw err;
-  //     });
-  //     copyDir(
-  //       path.join(__dirname, 'assets', dir),
-  //       path.join(__dirname, 'project-dist', 'assets', dir),
-  //     );
-  //   }
-  // });
 
   copyDir(
     path.join(__dirname, 'assets'),
