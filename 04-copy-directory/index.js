@@ -3,19 +3,19 @@ const { readdir } = require('fs/promises');
 const path = require('path');
 const { mkdir, rm}=require('fs/promises');
 
-function copyDir(){
-  rm(path.join(__dirname,'files-copy'),{ recursive: true, force: true },(err) => {
+function copyDir(origin, destination){
+  rm(destination,{ recursive: true, force: true },(err) => {
     if (err) throw err;
   }).then((err)=>{
     if(err) throw err;
 
-    mkdir(path.join(__dirname,'files-copy'), { recursive: true }, (err) => {
+    mkdir(destination, { recursive: true }, (err) => {
       if (err) throw err;
     });
-    readdir(path.join(__dirname,'files')).then(files => {
+    readdir(origin).then(files => {
       for (const file of files) {
         try {
-          copyFile(path.join(__dirname, 'files', file), path.join(__dirname, 'files-copy', file));
+          copyFile(path.join(origin, file), path.join(destination, file));
         } catch {
           console.log('The file could not be copied');
         }
@@ -23,4 +23,5 @@ function copyDir(){
     });
   });
 }
-copyDir();
+copyDir(path.join(__dirname,'files') ,path.join(__dirname,'files-copy'));
+module.exports=copyDir;

@@ -107,6 +107,3 @@ dist/
 bundle.*
 project-dist
 files-copy
-
-#my file
-app.js
