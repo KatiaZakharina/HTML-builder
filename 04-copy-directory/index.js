@@ -1,7 +1,6 @@
-const { copyFile }=require('fs/promises');
-const { readdir } = require('fs/promises');
+const fs=require('fs');
 const path = require('path');
-const { mkdir, rm}=require('fs/promises');
+const { copyFile, mkdir, rm, readdir}=require('fs/promises');
 
 function copyDir(origin, destination){
   rm(destination,{ recursive: true, force: true },(err) => {
@@ -15,7 +14,13 @@ function copyDir(origin, destination){
     readdir(origin).then(files => {
       for (const file of files) {
         try {
-          copyFile(path.join(origin, file), path.join(destination, file));
+          fs.stat(path.join(origin, file), (err, stats) => {
+            if (stats.isDirectory()) {
+              copyDir(path.join(origin, file), path.join(destination, file));
+            } else{
+              copyFile(path.join(origin, file), path.join(destination, file));
+            }
+          });
         } catch {
           console.log('The file could not be copied');
         }
